@@ -1,4 +1,5 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Json;
 using Archipelago.MultiClient.Net.Packets;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace Archipelago.MultiClient.Net
 		/// <summary>
 		/// Contains a slot data, differs per game
 		/// </summary>
-		public Dictionary<string, object> SlotData { get; }
+		public JObject SlotData { get; }
 
         public LoginSuccessful(ConnectedPacket connectedPacket)
         {

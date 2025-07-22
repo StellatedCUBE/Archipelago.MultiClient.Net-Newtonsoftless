@@ -1,6 +1,5 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Archipelago.MultiClient.Net.Json;
 using System.Collections.Generic;
 
 namespace Archipelago.MultiClient.Net.Packets
@@ -10,6 +9,6 @@ namespace Archipelago.MultiClient.Net.Packets
         public override ArchipelagoPacketType PacketType => ArchipelagoPacketType.Retrieved;
 
         [JsonProperty("keys")]
-        public Dictionary<string, JToken> Data { get; set; }
+        public Dictionary<string, JObject> Data { get; set; }
     }
 }

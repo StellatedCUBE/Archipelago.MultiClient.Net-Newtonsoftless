@@ -1,7 +1,6 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Json;
 using Archipelago.MultiClient.Net.Packets;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +11,8 @@ namespace Archipelago.MultiClient.Net.Converters
 	/// </summary>
     public class ArchipelagoPacketConverter : JsonConverter
     {
+        public static readonly ArchipelagoPacketConverter instance = new ArchipelagoPacketConverter();
+
         static readonly Dictionary<ArchipelagoPacketType, Func<JObject, ArchipelagoPacketBase>> PacketDeserializationMap = 
 	        new Dictionary<ArchipelagoPacketType, Func<JObject, ArchipelagoPacketBase>>(23)
         {
@@ -41,25 +42,17 @@ namespace Archipelago.MultiClient.Net.Converters
         };
 
         /// <inheritdoc/>
-		public override bool CanWrite => false;
-
-        /// <inheritdoc/>
-		public override bool CanConvert(Type objectType) => objectType.IsAssignableFrom(typeof(ArchipelagoPacketBase));
-
-        /// <inheritdoc/>
-		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+		public override object ToObject(JObject data)
         {
-            var token = JObject.Load(reader);
-
-            var commandType = token["cmd"]?.ToString();
+            var commandType = data["cmd"]?.ToString();
 
             ArchipelagoPacketBase packet;
 			if (EnumTryParse(commandType, out ArchipelagoPacketType packetType) && PacketDeserializationMap.ContainsKey(packetType))
-				packet = PacketDeserializationMap[packetType](token);
+				packet = PacketDeserializationMap[packetType](data);
 			else
 				packet = new UnknownPacket();
 
-	        packet.jobject = token;
+	        packet.jobject = data;
 
 	        return packet;
 		}
@@ -131,6 +124,6 @@ namespace Archipelago.MultiClient.Net.Converters
 		}
 
 		/// <inheritdoc/>
-		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
+		public override JObject FromObject(object @object) => throw new NotImplementedException();
     }
 }

@@ -37,53 +37,24 @@
 		<DebugType>pdbonly</DebugType>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<None Include="Icon\blue-icon.png" Pack="true" PackagePath="\" />
-		<None Include="..\README.md" Pack="true" PackagePath="\" />
-	</ItemGroup>
-
 	<ItemGroup Condition="'$(TargetFramework)' == 'net35'">
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>..\DLLs\net35\Newtonsoft.Json.dll</HintPath>
-		</Reference>
 		<Reference Include="websocket-sharp">
 			<HintPath>..\DLLs\websocket-sharp.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>..\DLLs\net40\Newtonsoft.Json.dll</HintPath>
-		</Reference>
 		<Reference Include="websocket-sharp">
 			<HintPath>..\DLLs\websocket-sharp.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>..\DLLs\net45\Newtonsoft.Json.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net6.0'">
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>..\DLLs\netstandard2.0\Newtonsoft.Json.dll</HintPath>
-		</Reference>
+	<ItemGroup>
+		<None Include="Icon\blue-icon.png" Pack="true" PackagePath="\" />
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Icon\" />
 	</ItemGroup>
-
-	<Target Name="Copy3rdPartyAssembliesTarget">
-		<ItemGroup>
-			<TfmSpecificPackageFile Include="bin\$(Configuration)\$(TargetFramework)\Newtonsoft.Json.dll">
-				<PackagePath>lib\$(TargetFramework)\Newtonsoft.Json.dll</PackagePath>
-			</TfmSpecificPackageFile>
-			<TfmSpecificPackageFile Include="bin\$(Configuration)\$(TargetFramework)\websocket-sharp.dll" Condition="'$(TargetFramework)' == 'net35' Or '$(TargetFramework)' == 'net40'">
-				<PackagePath>lib\$(TargetFramework)\websocket-sharp.dll</PackagePath>
-			</TfmSpecificPackageFile>
-		</ItemGroup>
-	</Target> 
 </Project>

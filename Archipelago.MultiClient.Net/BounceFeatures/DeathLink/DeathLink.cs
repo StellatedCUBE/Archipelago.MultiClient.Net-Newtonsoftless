@@ -1,5 +1,5 @@
 ﻿using Archipelago.MultiClient.Net.Converters;
-using Newtonsoft.Json.Linq;
+using Archipelago.MultiClient.Net.Json;
 using System;
 using System.Collections.Generic;
 
@@ -36,18 +36,18 @@ namespace Archipelago.MultiClient.Net.BounceFeatures.DeathLink
             Cause = cause;
         }
 
-        internal static bool TryParse(Dictionary<string, JToken> data, out DeathLink deathLink)
+        internal static bool TryParse(Dictionary<string, JObject> data, out DeathLink deathLink)
         {
             try
             {
-                if (!data.TryGetValue("time", out JToken timeStampToken) || !data.TryGetValue("source", out JToken sourceToken))
+                if (!data.TryGetValue("time", out JObject timeStampToken) || !data.TryGetValue("source", out JObject sourceToken))
                 {
                     deathLink = null;
                     return false;
                 }
 
                 string cause = null;
-                if (data.TryGetValue("cause", out JToken causeToken))
+                if (data.TryGetValue("cause", out JObject causeToken))
                 {
                     cause = causeToken.ToString();
                 }

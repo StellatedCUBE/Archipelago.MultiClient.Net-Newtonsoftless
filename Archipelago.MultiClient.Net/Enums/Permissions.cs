@@ -1,5 +1,4 @@
 ﻿using Archipelago.MultiClient.Net.Converters;
-using Newtonsoft.Json;
 using System;
 
 namespace Archipelago.MultiClient.Net.Enums
@@ -7,7 +6,6 @@ namespace Archipelago.MultiClient.Net.Enums
 	/// <summary>
 	/// Enum flags that describe the permissions of the currently connected player
 	/// </summary>
-    [JsonConverter(typeof(PermissionsEnumConverter))]
     [Flags]
     public enum Permissions
     {

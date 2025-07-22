@@ -1,7 +1,5 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
+using Archipelago.MultiClient.Net.Json;
 using System;
 
 namespace Archipelago.MultiClient.Net
@@ -13,7 +11,6 @@ namespace Archipelago.MultiClient.Net
 		internal JObject jobject;
 
 		[JsonProperty("cmd")]
-        [JsonConverter(typeof(StringEnumConverter))]
         public abstract ArchipelagoPacketType PacketType { get; }
 
         /// <summary>

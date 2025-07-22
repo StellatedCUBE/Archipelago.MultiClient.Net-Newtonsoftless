@@ -1,5 +1,8 @@
-﻿namespace Archipelago.MultiClient.Net.Enums
+﻿using Archipelago.MultiClient.Net.Json;
+
+namespace Archipelago.MultiClient.Net.Enums
 {
+	[JsonStringEnum]
     public enum JsonMessageType
     {
 		ItemSend,

@@ -2,7 +2,7 @@
 using Archipelago.MultiClient.Net.Converters;
 using Archipelago.MultiClient.Net.Exceptions;
 using Archipelago.MultiClient.Net.Extensions;
-using Newtonsoft.Json;
+using Archipelago.MultiClient.Net.Json;
 using System;
 using System.Collections.Generic;
 using System.Security.Authentication;
@@ -231,7 +231,7 @@ namespace Archipelago.MultiClient.Net.Helpers
         {
             if (webSocket != null && webSocket.IsAlive)
             {
-                var packetAsJson = JsonConvert.SerializeObject(packets);
+                var packetAsJson = JObject.FromObject(packets).ToJSON();
                 webSocket.Send(packetAsJson);
 
                 if (PacketsSent != null)
@@ -299,7 +299,7 @@ namespace Archipelago.MultiClient.Net.Helpers
         {
             if (webSocket.IsAlive)
             {
-                var packetAsJson = JsonConvert.SerializeObject(packets);
+                var packetAsJson = JObject.FromObject(packets).ToJSON();
                 webSocket.SendAsync(packetAsJson, onComplete);
 
                 if (PacketsSent != null)
@@ -354,7 +354,7 @@ namespace Archipelago.MultiClient.Net.Helpers
 
             if (webSocket != null && webSocket.IsAlive)
             {
-                var packetAsJson = JsonConvert.SerializeObject(packets);
+                var packetAsJson = JObject.FromObject(packets).ToJSON();
                 webSocket.SendAsync(packetAsJson, success => {
                     if (!success)
                         taskCompletionSource.TrySetException(new Exception("Failed to send packets async"));
@@ -406,7 +406,7 @@ namespace Archipelago.MultiClient.Net.Helpers
 
 	        try
 	        {
-		        packets = JsonConvert.DeserializeObject<List<ArchipelagoPacketBase>>(e.Data, Converter);
+		        packets = JObject.FromJSON(e.Data).ToObject<List<ArchipelagoPacketBase>>();
 	        }
 	        catch (Exception exception)
 	        {

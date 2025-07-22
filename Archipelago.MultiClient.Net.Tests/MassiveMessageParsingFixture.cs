@@ -1,6 +1,6 @@
 ﻿using Archipelago.MultiClient.Net.Converters;
+using Archipelago.MultiClient.Net.Json;
 using Archipelago.MultiClient.Net.Packets;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +10,12 @@ namespace Archipelago.MultiClient.Net.Tests
 	[TestFixture]
 	class MassiveMessageParsingFixture
 	{
-		static readonly ArchipelagoPacketConverter Converter = new ArchipelagoPacketConverter();
-
 		[Test]
 		public void Should_parse_large_async_message1()
 		{
 			const string message = MassiveAsyncMessage1;
 
-			var packets = JsonConvert.DeserializeObject<List<ArchipelagoPacketBase>>(message, Converter);
+			var packets = JObject.FromJSON(message).ToObject<List<ArchipelagoPacketBase>>();
 
 			Assert.That(packets, Is.Not.Null);
 			Assert.That(packets.Count, Is.EqualTo(1));

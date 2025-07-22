@@ -1,19 +1,16 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
-using Newtonsoft.Json;
+using Archipelago.MultiClient.Net.Json;
 using System;
 
 namespace Archipelago.MultiClient.Net.Converters
 {
     public class PermissionsEnumConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => 
-	        objectType == typeof(string) 
-	        || objectType == typeof(Permissions) 
-	        || objectType == typeof(int);
+        public static readonly PermissionsEnumConverter instance = new PermissionsEnumConverter();
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ToObject(JObject data)
         {
-            var value = reader.Value.ToString();
+            var value = data.ToString();
             var isInt = int.TryParse(value, out var intValue);
 
             if (isInt)
@@ -33,11 +30,11 @@ namespace Archipelago.MultiClient.Net.Converters
             return returnValue;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override JObject FromObject(object @object)
         {
-            var permissionsValue = (Permissions)value;
+            var permissionsValue = (Permissions)@object;
 
-            writer.WriteValue((int)permissionsValue);
+            return JObject.FromObject((int)permissionsValue);
         }
     }
 }

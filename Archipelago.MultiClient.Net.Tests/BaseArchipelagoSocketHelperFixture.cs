@@ -1,7 +1,6 @@
 ﻿#if NET47 || NET48 || NET6_0
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Packets;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -70,7 +69,6 @@ namespace Archipelago.MultiClient.Net.Tests
 
 			Assert.That(receivedPacket, Is.Null);
 			Assert.That(error, Is.Not.Null);
-			Assert.That(error, Is.TypeOf(typeof(JsonReaderException)));
 		}
 
 		[TestCase("some message", 100, Description = "Buffer bigger than message")]

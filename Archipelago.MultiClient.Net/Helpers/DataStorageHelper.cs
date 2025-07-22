@@ -1,7 +1,7 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Json;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -50,14 +50,14 @@ namespace Archipelago.MultiClient.Net.Helpers
 		/// <param name="originalValue">The original value before the update</param>
 		/// <param name="newValue">the current value</param>
 		/// <param name="additionalArguments">the additional arguments passed to the set operation</param>
-		public delegate void DataStorageUpdatedHandler(JToken originalValue, JToken newValue, Dictionary<string, JToken> additionalArguments);
+		public delegate void DataStorageUpdatedHandler(JObject originalValue, JObject newValue, Dictionary<string, JObject> additionalArguments);
 
 		readonly Dictionary<string, DataStorageUpdatedHandler> onValueChangedEventHandlers = new Dictionary<string, DataStorageUpdatedHandler>();
-        readonly Dictionary<Guid, DataStorageUpdatedHandler> operationSpecificCallbacks = new Dictionary<Guid, DataStorageUpdatedHandler>();
+        readonly Dictionary<string, DataStorageUpdatedHandler> operationSpecificCallbacks = new Dictionary<string, DataStorageUpdatedHandler>();
 #if NET35
-        readonly Dictionary<string, Action<JToken>> asyncRetrievalCallbacks = new Dictionary<string, Action<JToken>>();
+        readonly Dictionary<string, Action<JObject>> asyncRetrievalCallbacks = new Dictionary<string, Action<JObject>>();
 #else
-        readonly Dictionary<string, TaskCompletionSource<JToken>> asyncRetrievalTasks = new Dictionary<string, TaskCompletionSource<JToken>>();
+        readonly Dictionary<string, TaskCompletionSource<JObject>> asyncRetrievalTasks = new Dictionary<string, TaskCompletionSource<JObject>>();
 #endif
 
         readonly IArchipelagoSocketHelper socket;
@@ -98,12 +98,12 @@ namespace Archipelago.MultiClient.Net.Helpers
                 case SetReplyPacket setReplyPacket:
                     if (setReplyPacket.AdditionalArguments != null 
                         && setReplyPacket.AdditionalArguments.ContainsKey("Reference")
-                        && setReplyPacket.AdditionalArguments["Reference"].Type == JTokenType.Guid
-                        && operationSpecificCallbacks.TryGetValue((Guid)setReplyPacket.AdditionalArguments["Reference"], out var operationCallback))
+                        && setReplyPacket.AdditionalArguments["Reference"].Type == JObjectType.String
+                        && operationSpecificCallbacks.TryGetValue((string)setReplyPacket.AdditionalArguments["Reference"], out var operationCallback))
                     {
 						operationCallback(setReplyPacket.OriginalValue, setReplyPacket.Value, setReplyPacket.AdditionalArguments);
 
-                        operationSpecificCallbacks.Remove((Guid)setReplyPacket.AdditionalArguments["Reference"]);
+                        operationSpecificCallbacks.Remove((string)setReplyPacket.AdditionalArguments["Reference"]);
                     }
 
                     if (onValueChangedEventHandlers.TryGetValue(setReplyPacket.Key, out var handler))
@@ -126,7 +126,7 @@ namespace Archipelago.MultiClient.Net.Helpers
         }
 
 #if NET35
-		void GetAsync(string key, Action<JToken> callback)
+		void GetAsync(string key, Action<JObject> callback)
         {
             if (!asyncRetrievalCallbacks.ContainsKey(key))
                 asyncRetrievalCallbacks[key] = callback;
@@ -136,7 +136,7 @@ namespace Archipelago.MultiClient.Net.Helpers
             socket.SendPacketAsync(new GetPacket { Keys = new[] { key } });
         }
 #else
-	    Task<JToken> GetAsync(string key)
+	    Task<JObject> GetAsync(string key)
         {
             if (asyncRetrievalTasks.TryGetValue(key, out var asyncRetrievalTask))
             {
@@ -144,7 +144,7 @@ namespace Archipelago.MultiClient.Net.Helpers
             }
             else
             {
-                var newRetrievalTask = new TaskCompletionSource<JToken>();
+                var newRetrievalTask = new TaskCompletionSource<JObject>();
 
                 asyncRetrievalTasks[key] = newRetrievalTask;
 
@@ -155,7 +155,7 @@ namespace Archipelago.MultiClient.Net.Helpers
         }
 #endif
 
-        void Initialize(string key, JToken value) =>
+        void Initialize(string key, JObject value) =>
 	        socket.SendPacketAsync(new SetPacket
 	        {
 		        Key = key,
@@ -165,10 +165,10 @@ namespace Archipelago.MultiClient.Net.Helpers
 		        }
 	        });
 
-        JToken GetValue(string key)
+        JObject GetValue(string key)
         {
 #if NET35
-            JToken value = null;
+            JObject value = null;
 
             GetAsync(key, v => value = v);
 
@@ -205,7 +205,7 @@ namespace Archipelago.MultiClient.Net.Helpers
 		        throw new InvalidOperationException($"DataStorage write operation on readonly key '{key}' is not allowed");
 
 	        if (e == null)
-		        e = new DataStorageElement(OperationType.Replace, JValue.CreateNull());
+		        e = new DataStorageElement(OperationType.Replace, JObject.FromObject(null));
 	        
 	        if (e.Context == null)
             {
@@ -220,15 +220,15 @@ namespace Archipelago.MultiClient.Net.Helpers
                 });
             }
 
-			var additionalArguments = e.AdditionalArguments ?? new Dictionary<string, JToken>(0);
+			var additionalArguments = e.AdditionalArguments ?? new Dictionary<string, JObject>(0);
 
             if (e.Callbacks != null)
             {
-                var guid = Guid.NewGuid();
+                var guid = Guid.NewGuid().ToString();
 
                 operationSpecificCallbacks[guid] = e.Callbacks;
 
-                additionalArguments["Reference"] = JToken.FromObject(guid);
+                additionalArguments["Reference"] = JObject.FromObject(guid);
 				
 				socket.SendPacketAsync(new SetPacket
                 {

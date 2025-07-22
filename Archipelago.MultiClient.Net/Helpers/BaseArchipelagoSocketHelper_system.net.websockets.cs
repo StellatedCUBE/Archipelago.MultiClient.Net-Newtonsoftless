@@ -1,7 +1,7 @@
 ﻿#if NET45 || NETSTANDARD2_0 || NET6_0
 using Archipelago.MultiClient.Net.Converters;
 using Archipelago.MultiClient.Net.Exceptions;
-using Newtonsoft.Json;
+using Archipelago.MultiClient.Net.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,9 +20,6 @@ namespace Archipelago.MultiClient.Net.Helpers
 	/// <typeparam name="T">The type of WebSocket to use</typeparam>
     public class BaseArchipelagoSocketHelper<T> where T : WebSocket
 	{
-		// ReSharper disable once StaticMemberInGenericType
-		static readonly ArchipelagoPacketConverter Converter = new ArchipelagoPacketConverter();
-
 		/// <summary>
 		/// Handler for recieved and sucsesfully parsed packages
 		/// </summary>
@@ -262,7 +259,7 @@ namespace Archipelago.MultiClient.Net.Helpers
             
             var packets = packetList.ToArray();
             
-            var packetAsJson = JsonConvert.SerializeObject(packets);
+            var packetAsJson = JObject.FromObject(packets).ToJSON();
             var messageBuffer = Encoding.UTF8.GetBytes(packetAsJson);
             var messagesCount = (int)Math.Ceiling((double)messageBuffer.Length / bufferSize);
 
@@ -321,7 +318,7 @@ namespace Archipelago.MultiClient.Net.Helpers
 
 					try
 	                {
-		                packets = JsonConvert.DeserializeObject<List<ArchipelagoPacketBase>>(message, Converter);
+		                packets = JObject.FromJSON(message).ToObject<List<ArchipelagoPacketBase>>();
 					}
 	                catch (Exception exception)
 	                {

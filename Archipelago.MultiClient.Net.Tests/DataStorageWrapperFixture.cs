@@ -1,9 +1,8 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.Json;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -42,7 +41,7 @@ namespace Archipelago.MultiClient.Net.Tests
 
 			ExecuteAsyncWithDelay(
 				() => { hints = sut.GetHints(); },
-				() => RaiseRetrieved(socket, "_read_hints_2_8", JArray.FromObject(availableHints)));
+				() => RaiseRetrieved(socket, "_read_hints_2_8", JObject.FromObject(availableHints)));
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_hints_2_8"));
 
@@ -90,14 +89,14 @@ namespace Archipelago.MultiClient.Net.Tests
 						hints= t;
 					});
 				},
-				() => RaiseRetrieved(socket, "_read_hints_3_7", JArray.FromObject(availableHints)));
+				() => RaiseRetrieved(socket, "_read_hints_3_7", JObject.FromObject(availableHints)));
 
 			while (!hintsCallbackReceived)
 				Thread.Sleep(10);
 #else
 			ExecuteAsyncWithDelay(
 				() => { hints = sut.GetHintsAsync().Result; },
-				() => RaiseRetrieved(socket, "_read_hints_3_7", JArray.FromObject(availableHints)));
+				() => RaiseRetrieved(socket, "_read_hints_3_7", JObject.FromObject(availableHints)));
 #endif
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_hints_3_7"));
@@ -147,8 +146,8 @@ namespace Archipelago.MultiClient.Net.Tests
 				},
 				() =>
 				{
-					RaiseRetrieved(socket, "_read_hints_3_7", JArray.FromObject(availableHints));
-					RaiseWSetReply(socket, "_read_hints_3_7", JArray.FromObject(availableHints));
+					RaiseRetrieved(socket, "_read_hints_3_7", JObject.FromObject(availableHints));
+					RaiseWSetReply(socket, "_read_hints_3_7", JObject.FromObject(availableHints));
 				});
 
 			while (hintsCallbackCount < 2)
@@ -202,7 +201,7 @@ namespace Archipelago.MultiClient.Net.Tests
 						hints = t;
 					}, false);
 				},
-				() => RaiseWSetReply(socket, "_read_hints_6_8", JArray.FromObject(availableHints)));
+				() => RaiseWSetReply(socket, "_read_hints_6_8", JObject.FromObject(availableHints)));
 
 			while (!hintsCallbackReceived)
 				Thread.Sleep(10);
@@ -234,10 +233,10 @@ namespace Archipelago.MultiClient.Net.Tests
 
 			ExecuteAsyncWithDelay(
 				() => { hintsBySlot = sut.GetHints(11); },
-				() => RaiseRetrieved(socket, "_read_hints_0_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_hints_0_11", JObject.FromObject(null)));
 			ExecuteAsyncWithDelay(
 				() => { hintBySlotAndTeam = sut.GetHints(11, 2); },
-				() => RaiseRetrieved(socket, "_read_hints_2_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_hints_2_11", JObject.FromObject(null)));
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_hints_2_11"));
 			
@@ -267,7 +266,7 @@ namespace Archipelago.MultiClient.Net.Tests
 						hintsBySlot = t;
 					}, 11);
 				},
-				() => RaiseRetrieved(socket, "_read_hints_0_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_hints_0_11", JObject.FromObject(null)));
 			ExecuteAsyncWithDelay(
 				() => { 
 					sut.GetHintsAsync(t => {
@@ -275,17 +274,17 @@ namespace Archipelago.MultiClient.Net.Tests
 						hintBySlotAndTeam = t;
 					}, 11, 11);
 				},
-				() => RaiseRetrieved(socket, "_read_hints_11_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_hints_11_11", JObject.FromObject(null)));
 
 			while (!hintsBySlotCallbackReceived || !hintBySlotAndTeamCallbackReceived)
 				Thread.Sleep(10);
 #else
 			ExecuteAsyncWithDelay(
 				() => { hintsBySlot = sut.GetHintsAsync(11).Result; },
-				() => RaiseRetrieved(socket, "_read_hints_0_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_hints_0_11", JObject.FromObject(null)));
 			ExecuteAsyncWithDelay(
 				() => { hintBySlotAndTeam = sut.GetHintsAsync(11, 11).Result; },
-				() => RaiseRetrieved(socket, "_read_hints_11_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_hints_11_11", JObject.FromObject(null)));
 #endif
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_hints_0_11"));
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_hints_11_11"));
@@ -390,7 +389,7 @@ namespace Archipelago.MultiClient.Net.Tests
 
 			ExecuteAsyncWithDelay(
 				() => { slotData = sut.GetSlotData(99); },
-				() => RaiseRetrieved(socket, "_read_slot_data_99", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_slot_data_99", JObject.FromObject(null)));
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_slot_data_99"));
 
@@ -461,14 +460,14 @@ namespace Archipelago.MultiClient.Net.Tests
 						slotData = t;
 					}, 88);
 				},
-				() => RaiseRetrieved(socket, "_read_slot_data_88", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_slot_data_88", JObject.FromObject(null)));
 
 			while (!slotDataCallbackReceived)
 				Thread.Sleep(10);
 #else
 			ExecuteAsyncWithDelay(
 				() => { slotData = sut.GetSlotDataAsync(88).Result; },
-				() => RaiseRetrieved(socket, "_read_slot_data_88", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_slot_data_88", JObject.FromObject(null)));
 #endif
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_slot_data_88"));
 
@@ -517,7 +516,7 @@ namespace Archipelago.MultiClient.Net.Tests
 
 			ExecuteAsyncWithDelay(
 				() => { itemNameGroups = sut.GetItemNameGroups("NOT A REAL GAME"); },
-				() => RaiseRetrieved(socket, "_read_item_name_groups_NOT A REAL GAME", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_item_name_groups_NOT A REAL GAME", JObject.FromObject(null)));
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_item_name_groups_NOT A REAL GAME"));
 
@@ -590,14 +589,14 @@ namespace Archipelago.MultiClient.Net.Tests
 						itemNameGroups = t;
 					}, "YoloTheGame");
 				},
-				() => RaiseRetrieved(socket, "_read_item_name_groups_YoloTheGame", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_item_name_groups_YoloTheGame", JObject.FromObject(null)));
 
 			while (!slotDataCallbackReceived)
 				Thread.Sleep(10);
 #else
 			ExecuteAsyncWithDelay(
 				() => { itemNameGroups = sut.GetItemNameGroupsAsync("YoloTheGame").Result; },
-				() => RaiseRetrieved(socket, "_read_item_name_groups_YoloTheGame", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_item_name_groups_YoloTheGame", JObject.FromObject(null)));
 #endif
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_item_name_groups_YoloTheGame"));
@@ -647,7 +646,7 @@ namespace Archipelago.MultiClient.Net.Tests
 
 			ExecuteAsyncWithDelay(
 				() => { locationNameGroups = sut.GetLocationNameGroups("NOT A REAL GAME"); },
-				() => RaiseRetrieved(socket, "_read_location_name_groups_NOT A REAL GAME", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_location_name_groups_NOT A REAL GAME", JObject.FromObject(null)));
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_location_name_groups_NOT A REAL GAME"));
 
@@ -720,14 +719,14 @@ namespace Archipelago.MultiClient.Net.Tests
 						locationNameGroups = t;
 					}, "YoloTheGame");
 				},
-				() => RaiseRetrieved(socket, "_read_location_name_groups_YoloTheGame", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_location_name_groups_YoloTheGame", JObject.FromObject(null)));
 
 			while (!slotDataCallbackReceived)
 				Thread.Sleep(10);
 #else
 			ExecuteAsyncWithDelay(
 				() => { locationNameGroups = sut.GetLocationNameGroupsAsync("YoloTheGame").Result; },
-				() => RaiseRetrieved(socket, "_read_location_name_groups_YoloTheGame", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_location_name_groups_YoloTheGame", JObject.FromObject(null)));
 #endif
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_location_name_groups_YoloTheGame"));
@@ -749,7 +748,7 @@ namespace Archipelago.MultiClient.Net.Tests
 
 			ExecuteAsyncWithDelay(
 				() => { status = sut.GetClientStatus(); },
-				() => RaiseRetrieved(socket, "_read_client_status_2_8", new JValue((int)ArchipelagoClientState.ClientPlaying)));
+				() => RaiseRetrieved(socket, "_read_client_status_2_8", JObject.FromObject((int)ArchipelagoClientState.ClientPlaying)));
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_client_status_2_8"));
 
@@ -779,14 +778,14 @@ namespace Archipelago.MultiClient.Net.Tests
 						status = t;
 					});
 				},
-				() => RaiseRetrieved(socket, "_read_client_status_3_7", new JValue((int)ArchipelagoClientState.ClientReady)));
+				() => RaiseRetrieved(socket, "_read_client_status_3_7", JObject.FromObject((int)ArchipelagoClientState.ClientReady)));
 
 			while (!statusCallbackReceived)
 				Thread.Sleep(10);
 #else
 			ExecuteAsyncWithDelay(
 				() => { status = sut.GetClientStatusAsync().Result; },
-				() => RaiseRetrieved(socket, "_read_client_status_3_7", new JValue((int)ArchipelagoClientState.ClientReady)));
+				() => RaiseRetrieved(socket, "_read_client_status_3_7", JObject.FromObject((int)ArchipelagoClientState.ClientReady)));
 #endif
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_client_status_3_7"));
@@ -818,8 +817,8 @@ namespace Archipelago.MultiClient.Net.Tests
 				},
 				() =>
 				{
-					RaiseRetrieved(socket, "_read_client_status_3_7", new JValue((int)ArchipelagoClientState.ClientGoal));
-					RaiseWSetReply(socket, "_read_client_status_3_7", new JValue((int)ArchipelagoClientState.ClientGoal));
+					RaiseRetrieved(socket, "_read_client_status_3_7", JObject.FromObject((int)ArchipelagoClientState.ClientGoal));
+					RaiseWSetReply(socket, "_read_client_status_3_7", JObject.FromObject((int)ArchipelagoClientState.ClientGoal));
 				});
 
 			while (statusCallbackCount < 2)
@@ -855,7 +854,7 @@ namespace Archipelago.MultiClient.Net.Tests
 						status = t;
 					}, false);
 				},
-				() => RaiseWSetReply(socket, "_read_client_status_6_8", new JValue((int)ArchipelagoClientState.ClientConnected)));
+				() => RaiseWSetReply(socket, "_read_client_status_6_8", JObject.FromObject((int)ArchipelagoClientState.ClientConnected)));
 
 			while (!statusCallbackReceived)
 				Thread.Sleep(10);
@@ -880,10 +879,10 @@ namespace Archipelago.MultiClient.Net.Tests
 
 			ExecuteAsyncWithDelay(
 				() => { statusBySlot = sut.GetClientStatus(11); },
-				() => RaiseRetrieved(socket, "_read_client_status_0_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_client_status_0_11", JObject.FromObject(null)));
 			ExecuteAsyncWithDelay(
 				() => { statusBySlotAndTeam = sut.GetClientStatus(11, 2); },
-				() => RaiseRetrieved(socket, "_read_client_status_2_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_client_status_2_11", JObject.FromObject(null)));
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_client_status_0_11"));
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_client_status_2_11"));
@@ -916,7 +915,7 @@ namespace Archipelago.MultiClient.Net.Tests
 						statusBySlot = t;
 					}, 11);
 				},
-				() => RaiseRetrieved(socket, "_read_client_status_0_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_client_status_0_11", JObject.FromObject(null)));
 			ExecuteAsyncWithDelay(
 				() => { 
 					sut.GetClientStatusAsync(t => {
@@ -924,17 +923,17 @@ namespace Archipelago.MultiClient.Net.Tests
 						statusBySlotAndTeam = t;
 					}, 11, 11);
 				},
-				() => RaiseRetrieved(socket, "_read_client_status_11_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_client_status_11_11", JObject.FromObject(null)));
 
 			while (!statusBySlotCallbackReceived || !statusBySlotAndTeamCallbackReceived)
 				Thread.Sleep(10);
 #else
 			ExecuteAsyncWithDelay(
 				() => { statusBySlot = sut.GetClientStatusAsync(11).Result; },
-				() => RaiseRetrieved(socket, "_read_client_status_0_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_client_status_0_11", JObject.FromObject(null)));
 			ExecuteAsyncWithDelay(
 				() => { statusBySlotAndTeam = sut.GetClientStatusAsync(11, 11).Result; },
-				() => RaiseRetrieved(socket, "_read_client_status_11_11", JValue.CreateNull()));
+				() => RaiseRetrieved(socket, "_read_client_status_11_11", JObject.FromObject(null)));
 #endif
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_client_status_0_11"));
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_client_status_11_11"));
@@ -957,7 +956,7 @@ namespace Archipelago.MultiClient.Net.Tests
 
 			ExecuteAsyncWithDelay(
 				() => { raceMode = sut.GetRaceMode(); },
-				() => RaiseRetrieved(socket, "_read_race_mode", new JValue(true)));
+				() => RaiseRetrieved(socket, "_read_race_mode", JObject.FromObject(true)));
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_race_mode"));
 
@@ -984,14 +983,14 @@ namespace Archipelago.MultiClient.Net.Tests
 						raceMode = t;
 					});
 				},
-				() => RaiseRetrieved(socket, "_read_race_mode", new JValue(true)));
+				() => RaiseRetrieved(socket, "_read_race_mode", JObject.FromObject(true)));
 
 			while (!statusCallbackReceived)
 				Thread.Sleep(10);
 #else
 			ExecuteAsyncWithDelay(
 				() => { raceMode = sut.GetRaceModeAsync().Result; },
-				() => RaiseRetrieved(socket, "_read_race_mode", new JValue(true)));
+				() => RaiseRetrieved(socket, "_read_race_mode", JObject.FromObject(true)));
 #endif
 
 			socket.Received().SendPacketAsync(Arg.Is<GetPacket>(p => p.Keys.FirstOrDefault() == "_read_race_mode"));
@@ -1011,14 +1010,14 @@ namespace Archipelago.MultiClient.Net.Tests
 			}, 3000);
 		}
 
-		public static void RaiseRetrieved(IArchipelagoSocketHelper socket, string key, JToken value)
+		public static void RaiseRetrieved(IArchipelagoSocketHelper socket, string key, JObject value)
 		{
-			var packet = new RetrievedPacket { Data = new Dictionary<string, JToken> { { key, value } } };
+			var packet = new RetrievedPacket { Data = new Dictionary<string, JObject> { { key, value } } };
 
 			socket.PacketReceived += Raise.Event<ArchipelagoSocketHelperDelagates.PacketReceivedHandler>(packet);
 		}
 
-		public static void RaiseWSetReply(IArchipelagoSocketHelper socket, string key, JToken value)
+		public static void RaiseWSetReply(IArchipelagoSocketHelper socket, string key, JObject value)
 		{
 			var packet = new SetReplyPacket { Key = key, Value = value };
 

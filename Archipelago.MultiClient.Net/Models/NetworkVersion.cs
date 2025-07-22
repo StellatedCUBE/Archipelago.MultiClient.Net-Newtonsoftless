@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using Archipelago.MultiClient.Net.Json;
 using System;
 
 namespace Archipelago.MultiClient.Net.Models

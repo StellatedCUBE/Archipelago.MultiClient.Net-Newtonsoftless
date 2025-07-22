@@ -1,4 +1,6 @@
-﻿namespace Archipelago.MultiClient.Net.Enums
+﻿using Archipelago.MultiClient.Net.Json;
+
+namespace Archipelago.MultiClient.Net.Enums
 {
 	/// <summary>
 	/// Specified colors for printed messages
@@ -6,6 +8,7 @@
 	/// colors suffixed in Bg should be applied to the background
 	/// There colors are based of standard terminal colors
 	/// </summary>
+	[JsonStringEnum(snakeCase: true)]
     public enum JsonMessagePartColor
     {
 		/// <summary>

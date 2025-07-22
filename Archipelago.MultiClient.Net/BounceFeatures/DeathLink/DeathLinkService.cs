@@ -1,7 +1,7 @@
 ﻿using Archipelago.MultiClient.Net.Converters;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.Json;
 using Archipelago.MultiClient.Net.Packets;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,14 +67,14 @@ namespace Archipelago.MultiClient.Net.BounceFeatures.DeathLink
             var bouncePacket = new BouncePacket
             {
                 Tags = new List<string> { "DeathLink" },
-                Data = new Dictionary<string, JToken> {
-                    {"time", deathLink.Timestamp.ToUnixTimeStamp()},
-                    {"source", deathLink.Source},
+                Data = new Dictionary<string, JObject> {
+                    {"time", JObject.FromObject(deathLink.Timestamp.ToUnixTimeStamp())},
+                    {"source", JObject.FromObject(deathLink.Source)},
                 }
             };
 
             if (deathLink.Cause != null)
-                bouncePacket.Data.Add("cause", deathLink.Cause);
+                bouncePacket.Data.Add("cause", JObject.FromObject(deathLink.Cause));
 
             lastSendDeathLink = deathLink;
 

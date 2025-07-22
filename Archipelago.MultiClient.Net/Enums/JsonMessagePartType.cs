@@ -1,8 +1,11 @@
-﻿namespace Archipelago.MultiClient.Net.Enums
+﻿using Archipelago.MultiClient.Net.Json;
+
+namespace Archipelago.MultiClient.Net.Enums
 {
 	/// <summary>
 	/// Type of message parts of an print message
 	/// </summary>
+    [JsonStringEnum(snakeCase: true)]
     public enum JsonMessagePartType
     {
         /// <summary>

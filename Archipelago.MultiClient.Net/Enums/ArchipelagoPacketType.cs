@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Archipelago.MultiClient.Net.Json;
+using System;
 
 namespace Archipelago.MultiClient.Net.Enums
 {
+    [JsonStringEnum]
     public enum ArchipelagoPacketType
     {
         RoomInfo,

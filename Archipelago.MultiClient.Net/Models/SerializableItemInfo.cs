@@ -1,6 +1,6 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
-using Newtonsoft.Json;
+using Archipelago.MultiClient.Net.Json;
 using System.Runtime.Serialization;
 
 namespace Archipelago.MultiClient.Net.Models
@@ -104,11 +104,7 @@ namespace Archipelago.MultiClient.Net.Models
 					objectToSerialize.LocationGame = LocationGame;
 			}
 
-			var serializerSettings = new JsonSerializerSettings {
-				NullValueHandling = NullValueHandling.Ignore,
-				Formatting = Formatting.None
-			};
-			return JsonConvert.SerializeObject(objectToSerialize, serializerSettings);
+			return JObject.FromObject(objectToSerialize, dropNulls: true).ToJSON();
 		}
 
 		/// <summary>
@@ -131,12 +127,7 @@ namespace Archipelago.MultiClient.Net.Models
 					}
 					: null;
 
-			var serializerSettings = new JsonSerializerSettings
-			{
-				Context = new StreamingContext(StreamingContextStates.Other, streamingContext)
-			};
-
-			return JsonConvert.DeserializeObject<SerializableItemInfo>(json, serializerSettings);
+			return JObject.FromJSON(json).ToObject<SerializableItemInfo>(new StreamingContext(default, streamingContext));
 		}
 
 		[OnDeserialized]

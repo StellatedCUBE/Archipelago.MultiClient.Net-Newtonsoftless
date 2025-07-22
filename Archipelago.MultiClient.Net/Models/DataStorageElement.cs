@@ -1,10 +1,10 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 
 #if !NET35
 using System.Threading.Tasks;
@@ -33,21 +33,21 @@ namespace Archipelago.MultiClient.Net.Models
 		internal DataStorageElementContext Context;
         internal List<OperationSpecification> Operations = new List<OperationSpecification>(0);
         internal DataStorageHelper.DataStorageUpdatedHandler Callbacks;
-        internal Dictionary<string, JToken> AdditionalArguments = new Dictionary<string, JToken>(0);
+        internal Dictionary<string, JObject> AdditionalArguments = new Dictionary<string, JObject>(0);
 
-		JToken cachedValue;
+		JObject cachedValue;
 
         internal DataStorageElement(DataStorageElementContext context)
         {
             Context = context;
         }
-        internal DataStorageElement(OperationType operationType, JToken value)
+        internal DataStorageElement(OperationType operationType, JObject value)
         {
 			Operations = new List<OperationSpecification>(1) {
                 new OperationSpecification { OperationType = operationType, Value = value }
             };
         }
-        internal DataStorageElement(DataStorageElement source, OperationType operationType, JToken value) : this(source.Context)
+        internal DataStorageElement(DataStorageElement source, OperationType operationType, JObject value) : this(source.Context)
         {
             Operations = source.Operations.ToList();
             Callbacks = source.Callbacks;
@@ -73,62 +73,62 @@ namespace Archipelago.MultiClient.Net.Models
 		}
 
 #pragma warning disable CS1591
-		public static DataStorageElement operator ++(DataStorageElement a) => new DataStorageElement(a, OperationType.Add, 1);
-        public static DataStorageElement operator --(DataStorageElement a) => new DataStorageElement(a, OperationType.Add, -1);
-		public static DataStorageElement operator +(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Add, b);
-        public static DataStorageElement operator +(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Add, b);
-		public static DataStorageElement operator +(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Add, b);
-        public static DataStorageElement operator +(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Add, b);
-        public static DataStorageElement operator +(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Add, b);
-		public static DataStorageElement operator +(DataStorageElement a, string b) => new DataStorageElement(a, OperationType.Add, b);
-		public static DataStorageElement operator +(DataStorageElement a, JToken b) => new DataStorageElement(a, OperationType.Add, b);
-		public static DataStorageElement operator +(DataStorageElement a, IEnumerable b) => new DataStorageElement(a, OperationType.Add, JArray.FromObject(b));
+		public static DataStorageElement operator ++(DataStorageElement a) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(1));
+        public static DataStorageElement operator --(DataStorageElement a) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(-1));
+		public static DataStorageElement operator +(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(b));
+        public static DataStorageElement operator +(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(b));
+		public static DataStorageElement operator +(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(b));
+        public static DataStorageElement operator +(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(b));
+        public static DataStorageElement operator +(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(b));
+		public static DataStorageElement operator +(DataStorageElement a, string b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(b));
+		public static DataStorageElement operator +(DataStorageElement a, JObject b) => new DataStorageElement(a, OperationType.Add, b);
+		public static DataStorageElement operator +(DataStorageElement a, IEnumerable b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(b));
         public static DataStorageElement operator +(DataStorageElement a, OperationSpecification s) => new DataStorageElement(a, s.OperationType, s.Value);
         public static DataStorageElement operator +(DataStorageElement a, Callback c) => new DataStorageElement(a, c);
         public static DataStorageElement operator +(DataStorageElement a, AdditionalArgument arg) => new DataStorageElement(a, arg);
-		public static DataStorageElement operator *(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Mul, b);
-        public static DataStorageElement operator *(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Mul, b);
-        public static DataStorageElement operator *(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Mul, b);
-        public static DataStorageElement operator *(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Mul, b);
-        public static DataStorageElement operator *(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Mul, b);
-		public static DataStorageElement operator %(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Mod, b);
-        public static DataStorageElement operator %(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Mod, b);
-        public static DataStorageElement operator %(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Mod, b);
-        public static DataStorageElement operator %(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Mod, b);
-        public static DataStorageElement operator %(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Mod, b);
-		public static DataStorageElement operator ^(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Pow, b);
-		public static DataStorageElement operator ^(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Pow, b);
-		public static DataStorageElement operator ^(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Pow, b);
-		public static DataStorageElement operator ^(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Pow, b);
-		public static DataStorageElement operator ^(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Pow, b);
-        public static DataStorageElement operator -(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Add, JToken.FromObject(-b));
-        public static DataStorageElement operator -(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Add, JToken.FromObject(-b));
-        public static DataStorageElement operator -(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Add, JToken.FromObject(-b));
-        public static DataStorageElement operator -(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Add, JToken.FromObject(-b));
-        public static DataStorageElement operator -(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Add, JToken.FromObject(-b));
-        public static DataStorageElement operator /(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Mul, JToken.FromObject(1m / b));
-        public static DataStorageElement operator /(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Mul, JToken.FromObject(1m / b));
-        public static DataStorageElement operator /(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Mul, JToken.FromObject(1d / b));
-        public static DataStorageElement operator /(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Mul, JToken.FromObject(1d / b));
-        public static DataStorageElement operator /(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Mul, JToken.FromObject(1m / b));
+		public static DataStorageElement operator *(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(b));
+        public static DataStorageElement operator *(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(b));
+        public static DataStorageElement operator *(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(b));
+        public static DataStorageElement operator *(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(b));
+        public static DataStorageElement operator *(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(b));
+		public static DataStorageElement operator %(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Mod, JObject.FromObject(b));
+        public static DataStorageElement operator %(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Mod, JObject.FromObject(b));
+        public static DataStorageElement operator %(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Mod, JObject.FromObject(b));
+        public static DataStorageElement operator %(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Mod, JObject.FromObject(b));
+        public static DataStorageElement operator %(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Mod, JObject.FromObject(b));
+		public static DataStorageElement operator ^(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Pow, JObject.FromObject(b));
+		public static DataStorageElement operator ^(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Pow, JObject.FromObject(b));
+		public static DataStorageElement operator ^(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Pow, JObject.FromObject(b));
+		public static DataStorageElement operator ^(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Pow, JObject.FromObject(b));
+		public static DataStorageElement operator ^(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Pow, JObject.FromObject(b));
+        public static DataStorageElement operator -(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(-b));
+        public static DataStorageElement operator -(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(-b));
+        public static DataStorageElement operator -(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(-b));
+        public static DataStorageElement operator -(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(-b));
+        public static DataStorageElement operator -(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Add, JObject.FromObject(-b));
+        public static DataStorageElement operator /(DataStorageElement a, int b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(1m / b));
+        public static DataStorageElement operator /(DataStorageElement a, long b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(1m / b));
+        public static DataStorageElement operator /(DataStorageElement a, float b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(1d / b));
+        public static DataStorageElement operator /(DataStorageElement a, double b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(1d / b));
+        public static DataStorageElement operator /(DataStorageElement a, decimal b) => new DataStorageElement(a, OperationType.Mul, JObject.FromObject(1m / b));
         
-		public static implicit operator DataStorageElement(bool b) => new DataStorageElement(OperationType.Replace, b);
-		public static implicit operator DataStorageElement(int i) => new DataStorageElement(OperationType.Replace, i);
-		public static implicit operator DataStorageElement(long l) => new DataStorageElement(OperationType.Replace, l);
-		public static implicit operator DataStorageElement(decimal m) => new DataStorageElement(OperationType.Replace, m);
-		public static implicit operator DataStorageElement(double d) => new DataStorageElement(OperationType.Replace, d);
-		public static implicit operator DataStorageElement(float f) => new DataStorageElement(OperationType.Replace, f);
-		public static implicit operator DataStorageElement(string s) => s == null ? new DataStorageElement(OperationType.Replace, JValue.CreateNull()) : new DataStorageElement(OperationType.Replace, s);
-		public static implicit operator DataStorageElement(JToken o) => new DataStorageElement(OperationType.Replace, o);
-		public static implicit operator DataStorageElement(Array a) => new DataStorageElement(OperationType.Replace, JArray.FromObject(a));
-		public static implicit operator DataStorageElement(List<bool> l) => new DataStorageElement(OperationType.Replace, JArray.FromObject(l));
-		public static implicit operator DataStorageElement(List<int> l) => new DataStorageElement(OperationType.Replace, JArray.FromObject(l));
-		public static implicit operator DataStorageElement(List<long> l) => new DataStorageElement(OperationType.Replace, JArray.FromObject(l));
-		public static implicit operator DataStorageElement(List<decimal> l) => new DataStorageElement(OperationType.Replace, JArray.FromObject(l));
-		public static implicit operator DataStorageElement(List<double> l) => new DataStorageElement(OperationType.Replace, JArray.FromObject(l));
-		public static implicit operator DataStorageElement(List<float> l) => new DataStorageElement(OperationType.Replace, JArray.FromObject(l));
-		public static implicit operator DataStorageElement(List<string> l) => new DataStorageElement(OperationType.Replace, JArray.FromObject(l));
-		public static implicit operator DataStorageElement(List<object> l) => new DataStorageElement(OperationType.Replace, JArray.FromObject(l));
+		public static implicit operator DataStorageElement(bool b) => new DataStorageElement(OperationType.Replace, JObject.FromObject(b));
+		public static implicit operator DataStorageElement(int i) => new DataStorageElement(OperationType.Replace, JObject.FromObject(i));
+		public static implicit operator DataStorageElement(long l) => new DataStorageElement(OperationType.Replace, JObject.FromObject(l));
+		public static implicit operator DataStorageElement(decimal m) => new DataStorageElement(OperationType.Replace, JObject.FromObject(m));
+		public static implicit operator DataStorageElement(double d) => new DataStorageElement(OperationType.Replace, JObject.FromObject(d));
+		public static implicit operator DataStorageElement(float f) => new DataStorageElement(OperationType.Replace, JObject.FromObject(f));
+		public static implicit operator DataStorageElement(string s) => new DataStorageElement(OperationType.Replace, JObject.FromObject(s));
+		public static implicit operator DataStorageElement(JObject o) => new DataStorageElement(OperationType.Replace, o);
+		public static implicit operator DataStorageElement(Array a) => new DataStorageElement(OperationType.Replace, JObject.FromObject(a));
+		public static implicit operator DataStorageElement(List<bool> l) => new DataStorageElement(OperationType.Replace, JObject.FromObject(l));
+		public static implicit operator DataStorageElement(List<int> l) => new DataStorageElement(OperationType.Replace, JObject.FromObject(l));
+		public static implicit operator DataStorageElement(List<long> l) => new DataStorageElement(OperationType.Replace, JObject.FromObject(l));
+		public static implicit operator DataStorageElement(List<decimal> l) => new DataStorageElement(OperationType.Replace, JObject.FromObject(l));
+		public static implicit operator DataStorageElement(List<double> l) => new DataStorageElement(OperationType.Replace, JObject.FromObject(l));
+		public static implicit operator DataStorageElement(List<float> l) => new DataStorageElement(OperationType.Replace, JObject.FromObject(l));
+		public static implicit operator DataStorageElement(List<string> l) => new DataStorageElement(OperationType.Replace, JObject.FromObject(l));
+		public static implicit operator DataStorageElement(List<object> l) => new DataStorageElement(OperationType.Replace, JObject.FromObject(l));
 
 		public static implicit operator bool(DataStorageElement e) => RetrieveAndReturnBoolValue<bool>(e);
 		public static implicit operator bool?(DataStorageElement e) => RetrieveAndReturnBoolValue<bool?>(e);
@@ -160,20 +160,19 @@ namespace Archipelago.MultiClient.Net.Models
 		public static implicit operator List<string>(DataStorageElement e) => RetrieveAndReturnArrayValue<List<string>>(e);
 		public static implicit operator List<object>(DataStorageElement e) => RetrieveAndReturnArrayValue<List<object>>(e);
 		public static implicit operator Array(DataStorageElement e) => RetrieveAndReturnArrayValue<Array>(e);
-		public static implicit operator JArray(DataStorageElement e) => RetrieveAndReturnArrayValue<JArray>(e);
-		public static implicit operator JToken(DataStorageElement e) => e.Context.GetData(e.Context.Key);
+		public static implicit operator JObject(DataStorageElement e) => e.Context.GetData(e.Context.Key);
 
 #if !NET35
-		public static DataStorageElement operator +(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Add, JToken.Parse(b.ToString()));
-		public static DataStorageElement operator *(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Mul, JToken.Parse(b.ToString()));
-		public static DataStorageElement operator %(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Mod, JToken.Parse(b.ToString()));
-		public static DataStorageElement operator ^(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Pow, JToken.Parse(b.ToString()));
-		public static DataStorageElement operator -(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Add, JToken.Parse((-b).ToString()));
+		public static DataStorageElement operator +(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Add, JObject.FromJSON(b.ToString()));
+		public static DataStorageElement operator *(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Mul, JObject.FromJSON(b.ToString()));
+		public static DataStorageElement operator %(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Mod, JObject.FromJSON(b.ToString()));
+		public static DataStorageElement operator ^(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Pow, JObject.FromJSON(b.ToString()));
+		public static DataStorageElement operator -(DataStorageElement a, BigInteger b) => new DataStorageElement(a, OperationType.Add, JObject.FromJSON((-b).ToString()));
 		public static DataStorageElement operator /(DataStorageElement a, BigInteger b) =>
 			throw new InvalidOperationException(
 				"DataStorage[Key] / BigInterger is not supported, due to loss of precision when using integer division");
 
-		public static implicit operator DataStorageElement(BigInteger bi) => new DataStorageElement(OperationType.Replace, JToken.Parse(bi.ToString()));
+		public static implicit operator DataStorageElement(BigInteger bi) => new DataStorageElement(OperationType.Replace, JObject.FromJSON(bi.ToString()));
 
 		public static implicit operator BigInteger(DataStorageElement e) => RetrieveAndReturnBigIntegerValue<BigInteger>(e);
 		public static implicit operator BigInteger?(DataStorageElement e) => RetrieveAndReturnBigIntegerValue<BigInteger?>(e);
@@ -256,7 +255,7 @@ namespace Archipelago.MultiClient.Net.Models
 				}
 			}
 
-			e.cachedValue = JToken.Parse(value.ToString());
+			e.cachedValue = JObject.FromJSON(value.ToString());
 
             return value.HasValue
 	            ? (T)Convert.ChangeType(value.Value, IsNullable<T>() ? Nullable.GetUnderlyingType(typeof(T)) : typeof(T))
@@ -271,14 +270,14 @@ namespace Archipelago.MultiClient.Net.Models
 		/// Will not override any existing value, only set the default value if none existed
 		/// </summary>
 		/// <param name="value">The default value for the key</param>
-		public void Initialize(JToken value) => Context.Initialize(Context.Key, value);
+		public void Initialize(JObject value) => Context.Initialize(Context.Key, value);
 
         /// <summary>
         /// Initializes a value in the server side data storage
         /// Will not override any existing value, only set the default value if none existed
         /// </summary>
         /// <param name="value">The default value for the key</param>
-        public void Initialize(IEnumerable value) => Context.Initialize(Context.Key, JArray.FromObject(value));
+        public void Initialize(IEnumerable value) => Context.Initialize(Context.Key, JObject.FromObject(value));
 
 #if NET35
         /// <summary>
@@ -291,7 +290,7 @@ namespace Archipelago.MultiClient.Net.Models
         /// Retrieves the value of a certain key from server side data storage.
         /// </summary>
         /// <param name="callback">The callback that will be called when the value is retrieved</param>
-        public void GetAsync(Action<JToken> callback) => Context.GetAsync(Context.Key, callback);
+        public void GetAsync(Action<JObject> callback) => Context.GetAsync(Context.Key, callback);
 #else
         /// <summary>
         /// Retrieves the value of a certain key from server side data storage.
@@ -301,22 +300,22 @@ namespace Archipelago.MultiClient.Net.Models
         /// <summary>
         /// Retrieves the value of a certain key from server side data storage.
         /// </summary>
-        public Task<JToken> GetAsync() => Context.GetAsync(Context.Key);
+        public Task<JObject> GetAsync() => Context.GetAsync(Context.Key);
 #endif
 
         static T RetrieveAndReturnArrayValue<T>(DataStorageElement e)
         {
             if (e.cachedValue != null)
-                return ((JArray)e.cachedValue).ToObject<T>();
+                return ((JObject)e.cachedValue).ToObject<T>();
 
-            var value = e.Context.GetData(e.Context.Key).ToObject<JArray>() ?? new JArray();
+            var value = e.Context.GetData(e.Context.Key) ?? JObject.FromJSON("{}");
 
             foreach (var operation in e.Operations)
             {
                 switch (operation.OperationType)
                 {
                     case OperationType.Add:
-                        if (operation.Value.Type != JTokenType.Array)
+                        if (operation.Value.Type != JObjectType.Array)
                             throw new InvalidOperationException(
                                 $"Cannot perform operation {OperationType.Add} on Array value, with a non Array value: {operation.Value}");
 
@@ -324,10 +323,10 @@ namespace Archipelago.MultiClient.Net.Models
                         break;
 
                     case OperationType.Replace:
-                        if (operation.Value.Type != JTokenType.Array)
+                        if (operation.Value.Type != JObjectType.Array)
                             throw new InvalidOperationException($"Cannot replace Array value, with a non Array value: {operation.Value}");
 
-                        value = operation.Value.ToObject<JArray>() ?? new JArray();
+                        value = operation.Value;
                         break;
 
                     default:
@@ -346,7 +345,7 @@ namespace Archipelago.MultiClient.Net.Models
                 return (string)e.cachedValue;
 
 			var yayToken = e.Context.GetData(e.Context.Key);
-			var value = (yayToken.Type == JTokenType.Null)
+			var value = (yayToken.Type == JObjectType.Null)
 				? null
 				: yayToken.ToString();
 			
@@ -359,7 +358,7 @@ namespace Archipelago.MultiClient.Net.Models
                         break;
 
                     case OperationType.Mul:
-                        if (operation.Value.Type != JTokenType.Integer)
+                        if (operation.Value.Type != JObjectType.Number)
                             throw new InvalidOperationException($"Cannot perform operation {OperationType.Mul} on string value, with a non interger value: {operation.Value}");
 
                         value = string.Concat(Enumerable.Repeat(value, (int)operation.Value));
@@ -374,10 +373,7 @@ namespace Archipelago.MultiClient.Net.Models
                 }
             }
 
-			if (value == null)
-				e.cachedValue = JValue.CreateNull();
-			else
-				e.cachedValue = value;
+			e.cachedValue = JObject.FromObject(value);
 			
             return (string)e.cachedValue;
         }
@@ -394,7 +390,7 @@ namespace Archipelago.MultiClient.Net.Models
 		        switch (operation.OperationType)
 		        {
 			        case OperationType.Replace:
-				        value = (bool?)operation.Value;
+				        value = operation.Value.Type == JObjectType.Boolean ? (bool)operation.Value : (bool?)null;
 				        break;
 
 			        default:
@@ -402,7 +398,7 @@ namespace Archipelago.MultiClient.Net.Models
 		        }
 	        }
 
-	        e.cachedValue = value;
+	        e.cachedValue = JObject.FromObject(value);
 			
 			return value.HasValue 
 				? (T)Convert.ChangeType(value.Value, IsNullable<T>() ? Nullable.GetUnderlyingType(typeof(T)) : typeof(T))
@@ -481,7 +477,7 @@ namespace Archipelago.MultiClient.Net.Models
 				}
             }
 
-            e.cachedValue = value;
+            e.cachedValue = JObject.FromObject(value);
 
             return value.HasValue
 	            ? (T)Convert.ChangeType(value.Value, IsNullable<T>() ? Nullable.GetUnderlyingType(typeof(T)) : typeof(T))

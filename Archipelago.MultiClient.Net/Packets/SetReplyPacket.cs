@@ -1,6 +1,5 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Archipelago.MultiClient.Net.Json;
 
 namespace Archipelago.MultiClient.Net.Packets
 {
@@ -9,9 +8,9 @@ namespace Archipelago.MultiClient.Net.Packets
         public override ArchipelagoPacketType PacketType => ArchipelagoPacketType.SetReply;
 
         [JsonProperty("value")]
-        public JToken Value { get; set; }
+        public JObject Value { get; set; }
 
         [JsonProperty("original_value")]
-        public JToken OriginalValue { get; set; }
+        public JObject OriginalValue { get; set; }
 	}
 }

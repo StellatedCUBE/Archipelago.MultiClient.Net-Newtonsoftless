@@ -1,11 +1,13 @@
-﻿namespace Archipelago.MultiClient.Net.Enums
+﻿using Archipelago.MultiClient.Net.Json;
+
+namespace Archipelago.MultiClient.Net.Enums
 {
 	/// <summary>
 	/// The type of DataStorage operation
 	/// </summary>
+    [JsonStringEnum(snakeCase: true)]
     public enum OperationType
     {
-#pragma warning disable CS1591
 		Add,
         Mul,
         Max,
@@ -24,6 +26,5 @@
 		Update,
 		Floor,
 		Ceil
-#pragma warning restore CS1591
     }
 }

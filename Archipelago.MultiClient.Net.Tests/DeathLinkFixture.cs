@@ -1,9 +1,8 @@
 ﻿using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Converters;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.Json;
 using Archipelago.MultiClient.Net.Packets;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -71,7 +70,7 @@ namespace Archipelago.MultiClient.Net.Tests
             };
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            var packet = JsonConvert.DeserializeObject<List<ArchipelagoPacketBase>>(json, new ArchipelagoPacketConverter()).First();
+            var packet = JObject.FromJSON(json).ToObject<List<ArchipelagoPacketBase>>().First();
 
             socket.PacketReceived += Raise.Event<ArchipelagoSocketHelperDelagates.PacketReceivedHandler>(packet);
 
@@ -80,23 +79,23 @@ namespace Archipelago.MultiClient.Net.Tests
 
         public static TestCaseData[] DeathLinkParseTests =>
             new [] {
-                new TestCaseData(new Dictionary<string, JToken> {
-                    { "time", new DateTime(2022, 2, 2, 22, 2, 22).ToUnixTimeStamp() },
-                    { "source", "Test" },
-                    { "cause", "Died" }
+                new TestCaseData(new Dictionary<string, JObject> {
+                    { "time", JObject.FromObject(new DateTime(2022, 2, 2, 22, 2, 22).ToUnixTimeStamp()) },
+                    { "source", JObject.FromObject("Test") },
+                    { "cause", JObject.FromObject("Died") }
                 }, new DeathLink("Test", "Died") {
                     Timestamp = new DateTime(2022, 2, 2, 22, 2, 22)
                 }) { TestName = "Simple deathlink"},
-                new TestCaseData(new Dictionary<string, JToken> {
-                    { "time", new DateTime(2022, 2, 2, 22, 2, 22).ToUnixTimeStamp() },
-                    { "source", "No_Cause" }
+                new TestCaseData(new Dictionary<string, JObject> {
+                    { "time", JObject.FromObject(new DateTime(2022, 2, 2, 22, 2, 22).ToUnixTimeStamp()) },
+                    { "source", JObject.FromObject("No_Cause") }
                 }, new DeathLink("No_Cause") {
                     Timestamp = new DateTime(2022, 2, 2, 22, 2, 22)
                 }) { TestName = "No Cause"}
             };
 
         [TestCaseSource(nameof(DeathLinkParseTests))]
-        public void Should_parse_death_link(Dictionary<string, JToken> data, DeathLink expectedDeathLink)
+        public void Should_parse_death_link(Dictionary<string, JObject> data, DeathLink expectedDeathLink)
         {
             Assert.IsTrue(DeathLink.TryParse(data, out var deathLink));
 
@@ -126,10 +125,10 @@ namespace Archipelago.MultiClient.Net.Tests
 
             var bouncePacket = new BouncedPacket {
                 Tags = new List<string> { "DeathLink" },
-                Data = new Dictionary<string, JToken> {
-                    { "source", deathLink.Source },
-                    { "time", deathLink.Timestamp.ToUnixTimeStamp() },
-                    { "cause", deathLink.Cause } 
+                Data = new Dictionary<string, JObject> {
+                    { "source", JObject.FromObject(deathLink.Source) },
+                    { "time", JObject.FromObject(deathLink.Timestamp.ToUnixTimeStamp()) },
+                    { "cause", JObject.FromObject(deathLink.Cause) } 
                 }
             };
 

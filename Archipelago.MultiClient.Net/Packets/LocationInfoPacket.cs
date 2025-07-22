@@ -1,6 +1,6 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Json;
 using Archipelago.MultiClient.Net.Models;
-using Newtonsoft.Json;
 
 namespace Archipelago.MultiClient.Net.Packets
 {

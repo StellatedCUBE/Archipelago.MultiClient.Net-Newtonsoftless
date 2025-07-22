@@ -1,9 +1,6 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using Archipelago.MultiClient.Net.Json;
 using System.Collections;
 #if !NET35
 using System.Numerics;
@@ -20,14 +17,13 @@ namespace Archipelago.MultiClient.Net.Models
     {
 		/// <inheritdoc cref="T:Archipelago.MultiClient.Net.Models.OperationType"/>
 		[JsonProperty("operation")]
-        [JsonConverter(typeof(StringEnumConverter), typeof(SnakeCaseNamingStrategy))]
         public OperationType OperationType;
 
 		/// <summary>
 		/// The value related to this operation
 		/// </summary>
         [JsonProperty("value")]
-        public JToken Value { get; set; }
+        public JObject Value { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => $"{OperationType}: {Value}";
@@ -43,26 +39,26 @@ namespace Archipelago.MultiClient.Net.Models
 		/// </summary>
 		/// <param name="i">The value to compare to</param>
 		public static OperationSpecification Min(int i) =>
-			new OperationSpecification { OperationType = OperationType.Min, Value = i };
+			new OperationSpecification { OperationType = OperationType.Min, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Min(int)"/>
 		public static OperationSpecification Min(long i) =>
-			new OperationSpecification { OperationType = OperationType.Min, Value = i };
+			new OperationSpecification { OperationType = OperationType.Min, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Min(int)"/>
 		public static OperationSpecification Min(float i) =>
-			new OperationSpecification { OperationType = OperationType.Min, Value = i };
+			new OperationSpecification { OperationType = OperationType.Min, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Min(int)"/>
 		public static OperationSpecification Min(double i) =>
-			new OperationSpecification { OperationType = OperationType.Min, Value = i };
+			new OperationSpecification { OperationType = OperationType.Min, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Min(int)"/>
 		public static OperationSpecification Min(decimal i) =>
-			new OperationSpecification { OperationType = OperationType.Min, Value = i };
+			new OperationSpecification { OperationType = OperationType.Min, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Min(int)"/>
-		public static OperationSpecification Min(JToken i) =>
+		public static OperationSpecification Min(JObject i) =>
 			new OperationSpecification { OperationType = OperationType.Min, Value = i };
 #if !NET35
 		/// <inheritdoc cref="Min(int)"/>
 		public static OperationSpecification Min(BigInteger i) =>
-			new OperationSpecification { OperationType = OperationType.Min, Value = JToken.Parse(i.ToString()) };
+			new OperationSpecification { OperationType = OperationType.Min, Value = JObject.FromJSON(i.ToString()) };
 #endif
 
 		/// <summary>
@@ -70,33 +66,33 @@ namespace Archipelago.MultiClient.Net.Models
 		/// </summary>
 		/// <param name="i">The value to compare to</param>
 		public static OperationSpecification Max(int i) =>
-			new OperationSpecification { OperationType = OperationType.Max, Value = i };
+			new OperationSpecification { OperationType = OperationType.Max, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Max(int)"/>
 		public static OperationSpecification Max(long i) =>
-			new OperationSpecification { OperationType = OperationType.Max, Value = i };
+			new OperationSpecification { OperationType = OperationType.Max, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Max(int)"/>
 		public static OperationSpecification Max(float i) =>
-			new OperationSpecification { OperationType = OperationType.Max, Value = i };
+			new OperationSpecification { OperationType = OperationType.Max, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Max(int)"/>
 		public static OperationSpecification Max(double i) =>
-			new OperationSpecification { OperationType = OperationType.Max, Value = i };
+			new OperationSpecification { OperationType = OperationType.Max, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Max(int)"/>
 		public static OperationSpecification Max(decimal i) =>
-			new OperationSpecification { OperationType = OperationType.Max, Value = i };
+			new OperationSpecification { OperationType = OperationType.Max, Value = JObject.FromObject(i) };
 		/// <inheritdoc cref="Max(int)"/>
-		public static OperationSpecification Max(JToken i) =>
+		public static OperationSpecification Max(JObject i) =>
 		    new OperationSpecification { OperationType = OperationType.Max, Value = i };
 #if !NET35
 		/// <inheritdoc cref="Max(int)"/>
 		public static OperationSpecification Max(BigInteger i) =>
-			new OperationSpecification { OperationType = OperationType.Max, Value = JToken.Parse(i.ToString()) };
+			new OperationSpecification { OperationType = OperationType.Max, Value = JObject.FromJSON(i.ToString()) };
 #endif
 
 		/// <summary>
 		/// Performs a List.Remove() to remove the first occurrence of the provided value
 		/// </summary>
 		/// <param name="value">The value to remove</param>
-		public static OperationSpecification Remove(JToken value) =>
+		public static OperationSpecification Remove(JObject value) =>
 		    new OperationSpecification { OperationType = OperationType.Remove, Value = value };
 
 		/// <summary>
@@ -104,9 +100,9 @@ namespace Archipelago.MultiClient.Net.Models
 		/// </summary>
 		/// <param name="value">The index or key to remove</param>
 		public static OperationSpecification Pop(int value) =>
-			new OperationSpecification { OperationType = OperationType.Pop, Value = value };
+			new OperationSpecification { OperationType = OperationType.Pop, Value = JObject.FromObject(value) };
 		/// <inheritdoc cref="Pop(int)"/>
-		public static OperationSpecification Pop(JToken value) =>
+		public static OperationSpecification Pop(JObject value) =>
 		    new OperationSpecification { OperationType = OperationType.Pop, Value = value };
 
 
@@ -140,11 +136,11 @@ namespace Archipelago.MultiClient.Net.Models
 		/// </summary>
 		/// <param name="i">The value to XOR with</param>
 		public static OperationSpecification Xor(long i) =>
-            new OperationSpecification { OperationType = OperationType.Xor, Value = i };
+            new OperationSpecification { OperationType = OperationType.Xor, Value = JObject.FromObject(i) };
 #if !NET35
 		/// <inheritdoc cref="Xor(long)"/>
 	    public static OperationSpecification Xor(BigInteger i) =>
-		    new OperationSpecification { OperationType = OperationType.Xor, Value = JToken.Parse(i.ToString()) };
+		    new OperationSpecification { OperationType = OperationType.Xor, Value = JObject.FromJSON(i.ToString()) };
 #endif
 
 	    /// <summary>
@@ -152,11 +148,11 @@ namespace Archipelago.MultiClient.Net.Models
 	    /// </summary>
 	    /// <param name="i">The value to OR with</param>
 		public static OperationSpecification Or(long i) =>
-            new OperationSpecification { OperationType = OperationType.Or, Value = i };
+            new OperationSpecification { OperationType = OperationType.Or, Value = JObject.FromObject(i) };
 #if !NET35
 		/// <inheritdoc cref="Or(long)"/>
 		public static OperationSpecification Or(BigInteger i) =>
-			new OperationSpecification { OperationType = OperationType.Or, Value = JToken.Parse(i.ToString()) };
+			new OperationSpecification { OperationType = OperationType.Or, Value = JObject.FromJSON(i.ToString()) };
 #endif
 
 	    /// <summary>
@@ -164,25 +160,25 @@ namespace Archipelago.MultiClient.Net.Models
 	    /// </summary>
 	    /// <param name="i">The value to AND with</param>
 		public static OperationSpecification And(long i) =>
-            new OperationSpecification { OperationType = OperationType.And, Value = i };
+            new OperationSpecification { OperationType = OperationType.And, Value = JObject.FromObject(i) };
 #if !NET35
 	    /// <inheritdoc cref="And(long)"/>
 	    public static OperationSpecification And(BigInteger i) =>
-		    new OperationSpecification { OperationType = OperationType.And, Value = JToken.Parse(i.ToString()) };
+		    new OperationSpecification { OperationType = OperationType.And, Value = JObject.FromJSON(i.ToString()) };
 #endif
 		/// <summary>
 		/// Performs a bitwise left shift on the store its current value by the provided amount
 		/// </summary>
 		/// <param name="i">the amount to shift</param>
 		public static OperationSpecification LeftShift(long i) =>
-            new OperationSpecification { OperationType = OperationType.LeftShift, Value = i };
+            new OperationSpecification { OperationType = OperationType.LeftShift, Value = JObject.FromObject(i) };
 
 		/// <summary>
 		/// Performs a bitwise right shift on the store its current value by the provided amount
 		/// </summary>
 		/// <param name="i">the amount to shift</param>
 		public static OperationSpecification RightShift(long i) =>
-            new OperationSpecification { OperationType = OperationType.RightShift, Value = i };
+            new OperationSpecification { OperationType = OperationType.RightShift, Value = JObject.FromObject(i) };
     }
 
 	/// <summary>
@@ -211,7 +207,7 @@ namespace Archipelago.MultiClient.Net.Models
 	public class AdditionalArgument
 	{
 		internal string Key { get; set; }
-		internal JToken Value { get; set; }
+		internal JObject Value { get; set; }
 
 		AdditionalArgument() { }
 
@@ -221,7 +217,7 @@ namespace Archipelago.MultiClient.Net.Models
 		/// </summary>
 		/// <param name="name">The name of the argument</param>
 		/// <param name="value">The value of the argument</param>
-		public static AdditionalArgument Add(string name, JToken value) =>
+		public static AdditionalArgument Add(string name, JObject value) =>
 			new AdditionalArgument { Key = name, Value = value };
 	}
 }
