@@ -106,7 +106,11 @@ namespace Archipelago.MultiClient.Net.Json
 			Console.WriteLine($"Deserializing a {t.Name} from {ToJSON()}");
 			#endif
 
-			if (t.IsAssignableFrom(inner.GetType()))
+			if (inner == null)
+			{
+				return t.IsValueType ? Activator.CreateInstance(t) : null;
+			}
+			else if (t.IsAssignableFrom(inner.GetType()))
 			{
 				return inner;
 			}
